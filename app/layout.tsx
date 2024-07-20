@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter,Open_Sans,Lato,Raleway } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const OpenSans=Open_Sans({subsets: ['latin'],variable:'--OpenSans-font'},)
+const raleway=Raleway({subsets:['latin'],variable:'--raleway-font'})
+const lato=Lato({subsets:['latin'],weight:'400',variable:'--lato-font'})
 
 export const metadata: Metadata = {
   title: "Chrysansdecor",
@@ -19,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${OpenSans.className} ${OpenSans.variable} ${lato.variable} ${raleway.variable}`}>
         <div className="min-h-screen w-full flex flex-col justify-between scroll-smooth">
           <Header/>
           {children}

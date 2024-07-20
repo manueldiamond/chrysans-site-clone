@@ -1,4 +1,7 @@
-This is a  project 
+# ChrysansDecor-Website
+
+
+
 Development of the [Chrysans Decor Site](http://www.chrysansdecor.com) in [Next.js](https://nextjs.org/)
 
 ## Getting Started
@@ -11,9 +14,8 @@ npm i
 npm install
 ```
 
-## Run the local server
+Next, Run the local server
 
 ```bash
 npm run dev
 ```
-# ChrysansDecor-Website

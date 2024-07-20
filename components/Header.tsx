@@ -4,15 +4,23 @@ import React,{useState,useEffect} from 'react'
 import Link from 'next/link';
 import { useScroll,motion, useMotionValueEvent,useVelocity, AnimatePresence } from 'framer-motion';
 
-const links = [
+type linkType = {text:string; href:string};
+type dropDownType = {text:string; links:linkType[]};
+
+const links:(linkType|dropDownType)[] = [
     { text: 'Home', href: '#' },
     { text: 'Our Cutting-Edge Services', href: '#' },
     { text: 'Ideas', href: '#' },
-    { text: 'About Us', href: '#' },
+    { text: 'About Us', links:[
+        {text:'Who we are',href:'#'},
+        {text:'Meet the CEO',href:'#'},
+    ] },
     { text: 'FAQs', href: '#' }
 ];
 
-const secondaryLinks= [
+const isLinkDropdown=(link:linkType|dropDownType)=> 'links' in link
+
+const secondaryLinks:linkType[]= [
     { text: 'Brand Partners', href: '#' },
     { text: 'Paints', href: '#' },
     { text: 'Tiles', href: '#' },
@@ -24,13 +32,80 @@ const secondaryLinks= [
 
 const iconStyle = 'hover-scale !transition-all hover:opacity-80'
 
+const chevronSVG = (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+    </svg>
+)
+
+const FloatingDropDownMenu =({text,links}:dropDownType)=>{
+    const [opened,setOpened] = useState(false)
+    return(
+        <div  
+            onMouseEnter={() => setOpened(true)}  
+            onMouseLeave={() => setOpened(false)}
+            className='hover:text-primary flex cursor-pointer relative transition-colors'
+        >
+            {text}
+            <span className='size-3 opacity-40  flex'>{chevronSVG}</span>
+            <AnimatePresence>
+            {opened&&<motion.ul 
+                initial={{y:50,opacity:0}}
+                animate={{y:20,opacity:1}}
+                exit={{y:50,opacity:0}}
+                className='absolute flex flex-col p-5 shadow-sm bg-white w-max top-[100%] left-0'
+            >
+                {links.map((link)=>
+                    <li key={link.text}>
+                        <Link className='hover:text-primary py-3 text-black transition-colors' href={link.href}>{link.text}</Link>
+                    </li>
+                )}
+            </motion.ul>}
+            </AnimatePresence>
+        </div>)
+}
+
+const DropDownMenu =({text,links}:dropDownType)=>{
+
+    const [opened,setOpened] = useState(false)
+
+    return(
+        <>
+            <div className={` font-opensans border-solid border-t flex`} >
+                <span className={` transition-colors ${opened?'bg-black/5':'bg-transparent'} px-5 flex-1 py-3`}>{text}</span>
+                <button className={`hover-scale !transition-all outline-none ${opened?'bg-primary text-white':'bg-transparent text-black transition-colors '} flex px-5 border-l centered`} onClick={()=>setOpened(opened=>!opened)}>
+                    <motion.div 
+                        initial={{rotate:-90}}
+                        animate={{rotate:opened?0:-90}}
+                    >
+                        {chevronSVG}
+                    </motion.div>
+                </button>
+            </div>
+            <AnimatePresence>
+                {opened&&<motion.ul 
+                    initial={{height:0}}
+                    animate={{height:'auto'}}
+                    exit={{height:0}}
+                    className='flex flex-col overflow-hidden '
+                >
+                    {links.map((link)=>
+                         <li key={link.text} className=''>
+                            <Link className='py-3 px-5 border-solid border-t opacity-50 hover:text-primary transition-colors block font-light' href={link.href}>{link.text}</Link>
+                        </li>
+                    )}
+                </motion.ul>}
+            </AnimatePresence>
+        </>)
+}
+
 const Header = () => {
 
     const {scrollY,scrollYProgress} = useScroll()
     const [scroll, setScrollData] = useState({amt:0,direction:0,progress:0})
     console.log(scroll)
     
-    const showNav=scroll.progress<=0.25 || scroll.dir<0  || scroll.progress>=.98
+    const showNav=scroll.progress<=0.25 || scroll.direction<0  || scroll.progress>=.98
     const showBottomNav=scroll.progress<=0.02 || scroll.amt<=10
 
     const [sideMenuOpen,setSideMenuOpen] = useState(false) 
@@ -45,7 +120,9 @@ const Header = () => {
 
   return (
     <div className='relative z-50'>
-    
+        {/*Sth to pad out space at the top*/}
+        <div className='h-14'/>
+        
         <div className='fixed top-0 left-0 w-full '>
             <AnimatePresence>
                 {(showNav) && 
@@ -68,7 +145,11 @@ const Header = () => {
                             <ul className='hidden lg:flex gap-5 items-center h-10'>
                                 {links.map((link)=>
                                     <li key={link.text}>
-                                        <Link className='hover:text-primary  transition-colors' href={link.href}>{link.text}</Link>
+                                        {(isLinkDropdown(link))?(
+                                            <FloatingDropDownMenu {...link}/>
+                                        ):(
+                                            <Link className='hover:text-primary  transition-colors' href={link.href}>{link.text}</Link>
+                                        )}
                                     </li>
                                 )}
                             </ul>
@@ -140,54 +221,16 @@ const Header = () => {
                     <ul className='flex flex-col flex-1 overflow-auto pb-[45%]'>
                         {links.map((link)=>
                             <li key={link.text} className='last:border-b'>
+                            { isLinkDropdown(link)?(
+                                <DropDownMenu {...link}/>
+                            ):(
                                 <Link className='py-3 px-5 border-solid
                                 border-t
 
                                 hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
+                            )}
                             </li>
-                        )}
-                        {links.map((link)=>
-                            <li key={link.text} className='last:border-b'>
-                                <Link className='py-3 px-5 border-solid
-                                border-t
-
-                                hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
-                            </li>
-                        )}
-                        
-                    {links.map((link)=>
-                            <li key={link.text} className='last:border-b'>
-                                <Link className='py-3 px-5 border-solid
-                                border-t
-
-                                hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
-                            </li>
-                        )}
-                        {links.map((link)=>
-                            <li key={link.text} className='last:border-b'>
-                                <Link className='py-3 px-5 border-solid
-                                border-t
-
-                                hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
-                            </li>
-                        )}
-                        {links.map((link)=>
-                            <li key={link.text} className='last:border-b'>
-                                <Link className='py-3 px-5 border-solid
-                                border-t
-
-                                hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
-                            </li>
-                        )}
-                        {links.map((link)=>
-                            <li key={link.text} className='last:border-b'>
-                                <Link className='py-3 px-5 border-solid
-                                border-t
-
-                                hover:text-primary transition-colors block' href={link.href}>{link.text}</Link>
-                            </li>
-                        )}
-                                                
+                        )}                        
                     </ul>
                 </motion.div>
                 <motion.div 

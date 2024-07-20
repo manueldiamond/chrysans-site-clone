@@ -63,7 +63,7 @@ const Footer = () => {
   return (
     <footer>
         <div className='text-white bg-secondary'>
-            <div className='flex justify-between container py-5 lg:pt-[50px]  lg:pb-[90px] flex-wrap gap-6'>
+            <div className='flex justify-between container py-[50px]  lg:pb-[90px] flex-wrap gap-6'>
             
             {footerData.map((footerBlock,i)=>(
                 <FooterBlock className={i===0?'hidden lg:block':''} heading={footerBlock.heading}>

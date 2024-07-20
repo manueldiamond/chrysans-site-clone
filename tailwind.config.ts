@@ -15,17 +15,11 @@ const config: Config = {
         "grey":'#838282',
       },
       fontFamily: {
-        "primary": ['Roboto', 'sans-serif'],
-        "secondary": ['Roboto Slab', 'serif'],
-        "text": ['Roboto', 'sans-serif'],
-        "accent": ['Roboto', 'sans-serif'],
+        "raleway":'var(--raleway-font)',
+        "opensans":"var(--OpenSans-font)",
+        "lato":'var(--lato-font)',
       },
-      fontWeight: {
-        "primary": '600',
-        "secondary": '400',
-        "text": '400',
-        "accent": '500',
-      },
+
       container:{
         center: true,
         padding: '15px',
